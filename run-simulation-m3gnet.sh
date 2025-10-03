@@ -12,7 +12,12 @@ do
         for((j=1;j<=$sub_dir;j++))
         do
                 cd $j-*
-                lmp-m3gnet -in lammps-m3gnet-fully-relax
+                if [ ! -f "log.lammps" ]; then
+                    echo "Running LAMMPS in $PWD..."
+                    lmp-m3gnet -in lammps-m3gnet-fully-relax
+                else
+                    echo "log.lammps already exists in $PWD. Skipping LAMMPS run."
+                fi
                 cd ..
         done
         cd ..
