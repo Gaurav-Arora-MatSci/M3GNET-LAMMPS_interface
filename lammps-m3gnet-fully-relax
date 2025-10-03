@@ -1,0 +1,28 @@
+# ---------- Basic setup ----------
+units           metal
+atom_style      atomic
+boundary        p p p
+
+# ---------- Read structure ----------
+read_data       in.lmp
+
+# ---------- M3GNET potential ----------
+pair_style      m3gnet
+# Model token (correct): MP-2021.2.8-EFS
+# Order MUST match type IDs: 1=Ti, 2=Al, 3=Co
+pair_coeff      * * MP-2021.2.8-EFS Al Co
+
+
+neighbor        2.0 bin
+neigh_modify    delay 0 every 1 check yes
+
+thermo_style    custom step pe press vol temp lx ly lz
+thermo          100
+
+dump all_atoms all custom 50000 relax_*.dump id type x y z
+# ---------- Relaxation ----------
+variable        Ptarget equal 0.0
+fix             1 all box/relax iso ${Ptarget} vmax 0.001
+min_style       cg
+minimize        1e-12 1e-12 10000 20000
+unfix           1
